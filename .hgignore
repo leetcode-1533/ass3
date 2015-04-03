@@ -1,0 +1,6 @@
+syntax: glob
+DISCLAIMER.txt
+copyright.txt
+vtkLocal/*
+PythonScript/*
+Datasets/*
