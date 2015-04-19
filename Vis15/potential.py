@@ -27,15 +27,54 @@ hr.SetFileName(haloname)
 #rd.SetFileName("ds14_scivis_0128_e4_dt04_0.0200.txt")
 hr.Update()
 
+
 print "Running vtkPolyData."
 poly=vtk.vtkPolyData()
 poly=hr.GetOutput().GetPoints()
-print "Num points =", poly.GetNumberOfPoints()
+numHalos = poly.GetNumberOfPoints()
+print "Num points =", numHalos
 point = [0,0,0]
 poly.GetPoint(0,point);
 
 
 print "point at: ", point[0], ",",point[1], "," ,point[2]
+
+
+spheresourcelist = list()
+spheremaplist = list()
+sphereactorlist =list()
+pointlist = list()
+haloRadius = 75.0
+haloColor=[0,1,0]
+
+
+for i in range(numHalos):
+  spheresourcelist.append(vtk.vtkSphereSource())
+  spheremaplist.append(vtk.vtkPolyDataMapper())
+  sphereactorlist.append(vtk.vtkActor())
+  pointlist.append([0,0,0])
+  
+for i in range(numHalos):
+  poly.GetPoint(i,pointlist[i])
+  spheresourcelist[i].SetCenter(pointlist[i][0],pointlist[i][1],pointlist[i][2])
+  spheremaplist[i].SetInputConnection(spheresourcelist[i].GetOutputPort())
+  sphereactorlist[i].SetMapper(spheremaplist[i])
+  sphereactorlist[i].GetProperty().SetColor(haloColor[0],haloColor[1],haloColor[2])
+
+
+ren = vtk.vtkRenderer()
+renWin = vtk.vtkRenderWindow()
+renWin.AddRenderer(ren)
+renWin.SetWindowName("Phi field")
+iren = vtk.vtkRenderWindowInteractor()
+iren.SetRenderWindow(renWin)
+
+
+
+
+for i in range(numHalos):
+  ren.AddActor(sphereactorlist[i])
+
 
 
 '''
@@ -52,6 +91,7 @@ ass.SetInputConnection(rd.GetOutputPort())
 ass.Assign("phi", "SCALARS", "POINT_DATA")
 
 print "Running Shepard."
+
 shep = vtk.vtkShepardMethod()
 shep.SetInputConnection(ass.GetOutputPort())
 shep.SetSampleDimensions(100,100,100)
@@ -113,34 +153,11 @@ map.SetInputConnection(iso.GetOutputPort())
 map.SetLookupTable(lut)
 map.SetScalarRange(lo,hi)
 map.SetColorModeToMapScalars()
-
-source = vtk.vtkSphereSource()
-source.SetCenter(point[0],point[1],point[2])
-source.SetRadius(25.0)
-spMap = vtk.vtkPolyDataMapper()
-spMap.SetInputConnection(source.GetOutputPort())
-spActor = vtk.vtkActor()
-spActor.SetMapper(spMap)
-spActor.GetProperty().SetColor(1,0,0)
-
-
 actor = vtk.vtkActor()
 actor.SetMapper(map)
 actor.GetProperty().SetOpacity(0.5)
 
-ren = vtk.vtkRenderer()
-renWin = vtk.vtkRenderWindow()
-renWin.AddRenderer(ren)
-renWin.SetWindowName("Phi field")
-iren = vtk.vtkRenderWindowInteractor()
-iren.SetRenderWindow(renWin)
-
-
-
-ren.AddActor(spActor)
 ren.AddActor(actor)
-
-
 ren.SetBackground(1, 1, 1)
 renWin.SetSize(500, 500)
 renWin.Render()

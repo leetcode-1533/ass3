@@ -181,9 +181,9 @@ this->IS->getline(unused, 100000);
    ++numLines;
 }
 this->IS->seekg(length);
-numLines-=1;
+numLines-=2;
 std::cout << "TEST 6" << std::endl;
-numLines=1;
+
   // Skip sha-1 chunks
   
   this->IS->seekg(16*24, std::ios_base::cur);
