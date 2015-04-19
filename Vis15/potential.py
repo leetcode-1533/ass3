@@ -69,13 +69,44 @@ renWin.SetWindowName("Phi field")
 iren = vtk.vtkRenderWindowInteractor()
 iren.SetRenderWindow(renWin)
 
-
-
-
 for i in range(numHalos):
   ren.AddActor(sphereactorlist[i])
 
 
+#==============================================================================
+
+assv = vtk.vtkAssignAttribute()
+assv.SetInputConnection(hr.GetOutputPort())
+assv.Assign("velocity", "VECTORS", "POINT_DATA")
+
+print "running hogs"
+
+
+hogs = vtk.vtkHedgeHog()
+hogs.SetInputConnection(assv.GetOutputPort())
+hogs.SetVectorModeToUseVector()
+hogs.SetScaleFactor(10)
+
+lut1 = vtk.vtkLookupTable()
+lut1.SetNumberOfColors(64)
+lut1.SetHueRange(0.66,0)
+lut1.SetValueRange(1,1)
+lut1.SetSaturationRange(1,1)
+lut1.Build()
+
+map1 = vtk.vtkPolyDataMapper()
+map1.SetInputConnection(hogs.GetOutputPort())
+map1.SetScalarRange(hogs.GetOutputDataObject(0).GetScalarRange())
+map1.SetLookupTable(lut1)
+map1.SetColorModeToMapScalars()
+
+
+actor1 = vtk.vtkActor()
+actor1.SetMapper(map1)
+actor1.GetProperty().SetColor(1,0,0)
+print "hogs done!"
+
+#==============================================================================
 
 '''
 arrCalc=vtk.vtkArrayCalculator()
@@ -86,6 +117,8 @@ arrCalc.SetFunction('mag(velocity)')
 
 arrCalc.Update()
 '''
+
+
 ass = vtk.vtkAssignAttribute()
 ass.SetInputConnection(rd.GetOutputPort())
 ass.Assign("phi", "SCALARS", "POINT_DATA")
@@ -158,6 +191,10 @@ actor.SetMapper(map)
 actor.GetProperty().SetOpacity(0.5)
 
 ren.AddActor(actor)
+
+
+ren.AddActor(actor1)
+
 ren.SetBackground(1, 1, 1)
 renWin.SetSize(500, 500)
 renWin.Render()
