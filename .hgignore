@@ -1,6 +1,8 @@
 syntax: glob
+*~
 DISCLAIMER.txt
 copyright.txt
+Vis15/data/*
 vtkLocal/*
 PythonScript/*
 Datasets/*

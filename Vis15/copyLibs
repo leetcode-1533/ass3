@@ -1,0 +1,5 @@
+#!/bin/bash
+# copies .so files to local dir
+
+cp -v ../vtkLocal/lib/*.so .
+echo ".so files copied"

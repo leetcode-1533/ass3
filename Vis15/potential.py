@@ -15,7 +15,7 @@ rd.SetFileName(filename)
 rd.Update()
 bnds = rd.GetOutput().GetPoints().GetBounds()
 
-
+'''
 arrCalc=vtk.vtkArrayCalculator()
 arrCalc.SetInputConnection(rd.GetOutputPort())
 arrCalc.AddVectorArrayName("velocity")
@@ -23,9 +23,10 @@ arrCalc.SetResultArrayName("velocityMagnitude")
 arrCalc.SetFunction('mag(velocity)')
 
 arrCalc.Update()
+'''
 ass = vtk.vtkAssignAttribute()
-ass.SetInputConnection(arrCalc.GetOutputPort())
-ass.Assign("velocityMagnitude", "SCALARS", "POINT_DATA")
+ass.SetInputConnection(rd.GetOutputPort())
+ass.Assign("phi", "SCALARS", "POINT_DATA")
 
 print "Running Shepard."
 shep = vtk.vtkShepardMethod()
@@ -97,6 +98,7 @@ actor.GetProperty().SetOpacity(0.5)
 ren = vtk.vtkRenderer()
 renWin = vtk.vtkRenderWindow()
 renWin.AddRenderer(ren)
+renWin.SetWindowName("Phi field")
 iren = vtk.vtkRenderWindowInteractor()
 iren.SetRenderWindow(renWin)
 
