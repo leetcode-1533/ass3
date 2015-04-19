@@ -166,31 +166,31 @@ std::cout << "TEST 3" << std::endl;
 // ID, DescID,Mvir,Vmax,Vrms,Rvir,Rs,Np,X,Y,Z, VX,VY,VZ,JX,JY,JZ,Spin,rs_klypin,Mvir_all,M200b,M200c,M500c,M2500c,Xoff,Voff,spin_bullock,b_to_a,c_to_a,A[x],A[y],A[z],b_to_a(500c),c_to_a(500c),A[x](500c),A[y](500c),A[z](500c),T/|U|,M_pe_Behroozi,M_pe_Diemer
 // 0  1        2     3     4    5  6 7  8 9 10 11 12 13 14 15 16 17   18          19      20    21     22    23     24  25    26           27      28   29  30   31     32            33          34        35         36         37         38        39
   // Skip header.
+  
+
   int counter=0;
   char headerline[100000];
-  do {
+  std::vector<std::string> allLines;
+  while (headerline[0] == '#'){
   std::cout << "TEST 4 + " << counter << std::endl;
   //std::cout << inp.buffer << std::endl;
   
     this->IS->getline(headerline, 2750, '\n');
     counter++;
-  } while (headerline[0] == '#');
-int length = this->IS->tellg();
-int numLines=0;
-char unused[100000];
-std::cout << "TEST 5" << std::endl;
-while ( !(this->IS->eof()) )
+  }
+  
+ char unused[100000]; 
+  while ( !(this->IS->eof()) )
 {
 this->IS->getline(unused, 100000);
-   ++numLines;
+   allLines.push_back(unused);
 }
-this->IS->seekg(length);
-
-std::cout << "TEST 6" << std::endl;
+int numLines = (allLines.size())-10;
+// TODO fix this bit
 
   // Skip sha-1 chunks
   
-  this->IS->seekg(16*24, std::ios_base::cur);
+  //this->IS->seekg(16*24, std::ios_base::cur);
 
   vel->SetName("velocity");
   vel->SetNumberOfComponents(3);
@@ -216,29 +216,26 @@ counter=0;
 
  for (vtkIdType pnr = 0; pnr <numLines; pnr++)
     {
-    std::cout << "TEST 8 + "<<counter << std::endl;
-    counter++;
-    char line[100000];
-    this->IS->read(line, 48);
-    std::cout << line << std::endl;
-    
-    
+counter+=1;
     std::string buf; // Have a buffer string
     std::stringstream ss; // Insert the string into a stream
-ss << line;
+ss << allLines.at(counter);
+
+
+std::cout << "Line "<< counter <<" is " << ss << std::endl;
     std::vector<std::string> tokens; // Create vector to hold our words
 
     while (ss >> buf) tokens.push_back(buf);
     
     
-    
+    if (tokens.size() >=39 ){
     
     points->InsertPoint(pnr, std::stof (tokens.at(8)), std::stof (tokens.at(9)), std::stof (tokens.at(10)));
     vel->InsertTuple3(pnr, std::stof (tokens.at(11)), std::stof (tokens.at(12)), std::stof (tokens.at(13)));
    /* jval->InsertTuple3(pnr, inp.fields.JX, inp.fields.JY, inp.fields.JZ);
     acc->InsertTuple3(pnr, inp.fields.AX, inp.fields.AY, inp.fields.AZ);*/
  id->InsertValue(pnr, std::stoi (tokens.at(0)));
-
+}
     }
 std::cout << "TEST 9" << std::endl;
   output->SetPoints(points);

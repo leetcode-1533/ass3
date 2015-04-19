@@ -118,7 +118,7 @@ arrCalc.SetFunction('mag(velocity)')
 arrCalc.Update()
 '''
 
-
+'''
 ass = vtk.vtkAssignAttribute()
 ass.SetInputConnection(rd.GetOutputPort())
 ass.Assign("phi", "SCALARS", "POINT_DATA")
@@ -186,12 +186,13 @@ map.SetInputConnection(iso.GetOutputPort())
 map.SetLookupTable(lut)
 map.SetScalarRange(lo,hi)
 map.SetColorModeToMapScalars()
+
 actor = vtk.vtkActor()
 actor.SetMapper(map)
 actor.GetProperty().SetOpacity(0.5)
 
 ren.AddActor(actor)
-
+'''
 
 ren.AddActor(actor1)
 
