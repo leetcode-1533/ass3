@@ -68,6 +68,7 @@ iso.ComputeNormalsOn()
 #iso.SetValue(1, (lo+hi)*0.5)
 #iso.SetValue(2, (lo+hi)*0.65)
 iso.SetNumberOfContours(8)
+'''
 iso.SetValue(0, (lo+hi)*0.53)
 iso.SetValue(1, (lo+hi)*0.5)
 iso.SetValue(2, (lo+hi)*0.65)
@@ -76,6 +77,17 @@ iso.SetValue(4, (lo+hi)*0.15)
 iso.SetValue(5, (lo+hi)*0.75)
 iso.SetValue(6, (lo+hi)*0.47)
 iso.SetValue(7, (lo+hi)*0.32)
+'''
+
+iso.SetValue(0, (lo+hi)*0.01)
+iso.SetValue(1, (lo+hi)*0.03)
+iso.SetValue(2, (lo+hi)*0.05)
+iso.SetValue(3, (lo+hi)*0.08)
+iso.SetValue(4, (lo+hi)*0.10)
+iso.SetValue(5, (lo+hi)*0.15)
+iso.SetValue(6, (lo+hi)*0.18)
+iso.SetValue(7, (lo+hi)*0.22)
+
 
 lut = vtk.vtkLookupTable()
 lut.SetNumberOfColors(64)

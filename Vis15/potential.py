@@ -1,19 +1,42 @@
 
 import vtk, sys,os
 from vtkMETAPython import vtkVis15DatasetReader
+from vtkMETAPython import vtkVis15HaloDataReader
 
 filename="/home/csunix/scsdjd/Public/ds14_scivis_0128_e4_dt04_0.0600.txt"
 if (len(sys.argv) > 1):
   filename=os.path.realpath(sys.argv[1])
 print "filename =", filename
 
+if (len(sys.argv) > 1):
+  haloname=os.path.realpath(sys.argv[2])
+print "haloname =", haloname
 
+print "Running vtkVis15DatasetReader."
 rd = vtkVis15DatasetReader()
 #rd.SetFileName("ds14_scivis_0128_e4_dt04_0.2000.txt")
 rd.SetFileName(filename)
 #rd.SetFileName("ds14_scivis_0128_e4_dt04_0.0200.txt")
 rd.Update()
 bnds = rd.GetOutput().GetPoints().GetBounds()
+
+print "Running vtkVis15HaloDataReader."
+hr = vtkVis15HaloDataReader()
+#rd.SetFileName("ds14_scivis_0128_e4_dt04_0.2000.txt")
+hr.SetFileName(filename)
+#rd.SetFileName("ds14_scivis_0128_e4_dt04_0.0200.txt")
+hr.Update()
+
+print "Running vtkPolyData."
+poly=vtk.vtkPolyData()
+poly=hr.GetOutput().GetPoints()
+
+point = [0,0,0]
+poly.GetPoint(0,point);
+
+
+
+
 
 '''
 arrCalc=vtk.vtkArrayCalculator()
@@ -91,6 +114,16 @@ map.SetLookupTable(lut)
 map.SetScalarRange(lo,hi)
 map.SetColorModeToMapScalars()
 
+source = vtk.vtkSphereSource()
+source.SetCenter(point[0],point[1],point[2])
+source.SetRadius(100.0)
+spMap = vtk.vtkPolyDataMapper()
+spMap.SetInputConnection(source.GetOutputPort())
+spActor = vtk.vtkActor()
+spActor.SetMapper(spMap)
+spActor.GetProperty().SetColor(1,0,0)
+
+
 actor = vtk.vtkActor()
 actor.SetMapper(map)
 actor.GetProperty().SetOpacity(0.5)
@@ -102,13 +135,18 @@ renWin.SetWindowName("Phi field")
 iren = vtk.vtkRenderWindowInteractor()
 iren.SetRenderWindow(renWin)
 
+
+
+ren.AddActor(spActor)
 ren.AddActor(actor)
+
+
 ren.SetBackground(1, 1, 1)
 renWin.SetSize(500, 500)
 renWin.Render()
 
 cam1 = ren.GetActiveCamera()
-cam1.Zoom(1.5)
+#cam1.Zoom(1.5)
 
 iren.Initialize()
 renWin.Render()
