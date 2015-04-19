@@ -15,11 +15,19 @@ rd.SetFileName(filename)
 rd.Update()
 bnds = rd.GetOutput().GetPoints().GetBounds()
 
+
+arrCalc=vtk.vtkArrayCalculator()
+arrCalc.SetInputConnection(rd.GetOutputPort())
+arrCalc.AddVectorArrayName("velocity")
+arrCalc.SetResultArrayName("velocityMagnitude")
+arrCalc.SetFunction('mag(velocity)')
+
+arrCalc.Update()
 ass = vtk.vtkAssignAttribute()
-ass.SetInputConnection(rd.GetOutputPort())
-ass.Assign("phi", "SCALARS", "POINT_DATA")
+ass.SetInputConnection(arrCalc.GetOutputPort())
+ass.Assign("velocityMagnitude", "SCALARS", "POINT_DATA")
 
-
+print "Running Shepard."
 shep = vtk.vtkShepardMethod()
 shep.SetInputConnection(ass.GetOutputPort())
 shep.SetSampleDimensions(100,100,100)
@@ -27,7 +35,7 @@ shep.SetMaximumDistance(0.1)
 shep.SetModelBounds(bnds)
 
 
-print "Running Shepard."
+
 shep.Update()
 print "Shep completed."
 so = shep.GetOutput()
