@@ -21,7 +21,7 @@ def signal_time(filename):
     z = test[19]
     
     fig = plt.figure()
-    ax = fig.add_subplot(111, projection='3d')
+    ax = fig.add_subplot(111)
     ax.scatter(x,y,z)
     fig.savefig(filename+'.png')
 def filelist():
